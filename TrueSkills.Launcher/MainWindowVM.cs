@@ -18,7 +18,7 @@ namespace TrueSkills
     {
         const string SUPPORT_SITE = "https://help.trueskills.ru";
         const string DOWNLOAD_APP = "https://codeload.github.com/VictorGaan/Build/zip/refs/heads/master";
-        const string DOWNLOAD_APP_VERSION = "https://raw.githubusercontent.com/VictorGaan/TrueSkills.Launcher/master/Version.txt";
+        const string DOWNLOAD_APP_VERSION = "https://raw.githubusercontent.com/VictorGaan/Build/master/Version.txt";
 
         string APP_DIRECTORY = Path.GetTempPath() + "TrueSkillsApp";
         public event EventHandler LanguageChanged;
