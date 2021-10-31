@@ -1,0 +1,117 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v="clr-namespace:System;assembly=mscorlib">
+    <!--All Window-->
+    <v:String x:Key="a_DemoExam">Demo Exam</v:String>
+    <v:String x:Key="a_Error">Ошибка</v:String>
+    <v:String x:Key="a_Proceed">Продолжить</v:String>
+    <v:String x:Key="a_Mice">Подключено больше одной мыши</v:String>
+    <v:String x:Key="a_Step1">Экзамен еще на начался</v:String>
+    <v:String x:Key="a_Step2">Экзамен начался, отображение документов</v:String>
+    <v:String x:Key="a_Step3">Экзамен начался, модуль еще не начался</v:String>
+    <v:String x:Key="a_Step4">Экзамен начался, отображение задания</v:String>
+    <v:String x:Key="a_Step5">Экзамен начался, модуль идет</v:String>
+    <v:String x:Key="a_Step6">Экзамен закончен</v:String>
+    <v:String x:Key="a_Code1">Данные авторизации некорректны</v:String>
+    <v:String x:Key="a_Code2">Отсутствует токен</v:String>
+    <v:String x:Key="a_Code6">Файл не найден</v:String>
+    <v:String x:Key="a_Code7">Идентификатор не соответствует файлу</v:String>
+    <v:String x:Key="a_Code8">VM не обнаружена</v:String>
+    <v:String x:Key="a_Code9">VM не обнаружена</v:String>
+    <v:String x:Key="a_Code10">Комната не найдена</v:String>
+    <!--All Window-->
+
+    <!--Launcher-->
+    <!--MainWindow-->
+    <v:String x:Key="lm_Title">Лаунчер</v:String>
+    <v:String x:Key="lm_DownloadingApp">Загрузить приложение</v:String>
+    <v:String x:Key="lm_DownloadingUpdate">Загрузить обновление</v:String>
+    <v:String x:Key="lm_Failed">Ошибка обновления - Повторить</v:String>
+    <v:String x:Key="lm_LanguageTitle">Язык</v:String>
+    <v:String x:Key="lm_Ready">Старт</v:String>
+    <v:String x:Key="lm_Support">Помощь</v:String>
+    <v:String x:Key="lm_Version">Версия</v:String>
+    <!--Launcher-->
+    <!--MainWindow-->
+
+    <!--TrueSkills-->
+    <!--MainWindow-->
+    <v:String x:Key="tm_Title">Авторизация</v:String>
+    <v:String x:Key="tm_LFM">ФИО</v:String>
+    <v:String x:Key="tm_CodeExam">Код экзамена</v:String>
+    <v:String x:Key="tm_AuthorizationCommand">Авторизация</v:String>
+    <v:String x:Key="tm_EmptyError">Пустое значение</v:String>
+    <v:String x:Key="tm_NumberError">Числовые значения для данного поля недопустимы</v:String>
+    <v:String x:Key="tm_PunctuationError">Данное поле должно включать пробелы и тире (“-”).</v:String>
+    <v:String x:Key="tm_RangeError">Количество символов для данного поля должны быть в диапазоне 5-255</v:String>
+    <v:String x:Key="tm_LatinOrNumberError">Для данного поля, возможны только латинские буквы и числа</v:String>
+    <v:String x:Key="tm_WhiteSpaceError">Пробелы нельзя использовать для данного поля</v:String>
+    <v:String x:Key="tm_RangeExamError">Количество символов для данного поля должны быть в диапазоне 5-8</v:String>
+    <!--MainWindow-->
+
+    <!--NavigationWindow-->
+    <v:String x:Key="nw_Title">Главное окно</v:String>
+    <!--NavigationWindow-->
+
+    <!--SettingsPage-->
+    <v:String x:Key="sp_Title">Технические характеристики необходимые для экзамена</v:String>
+    <v:String x:Key="sp_Minimum">Минимальные</v:String>
+    <v:String x:Key="sp_Your">Ваши</v:String>
+    <!--SettingsPage-->
+    <!--TrueSkills-->
+
+    <!--ReconnectionWindow-->
+    <v:String x:Key="rw_Title">Переподключение</v:String>
+    <v:String x:Key="rw_Reconnection">Связь с сервером оборвалась, требуется переподключение</v:String>
+    <v:String x:Key="rw_ReconnectionCommand">Переподключиться</v:String>
+    <!--ReconnectionWindow-->
+
+    <!--MoveAwayWindow-->
+    <v:String x:Key="ma_Title">Отошёл</v:String>
+    <v:String x:Key="ma_Return">Я вернулся</v:String>
+    <!--MoveAwayWindow-->
+
+    <!--ExamEnd-->
+    <v:String x:Key="ee_Title">Экзамен окончен</v:String>
+    <v:String x:Key="ee_End">Экзамен окончен</v:String>
+    <v:String x:Key="ee_NewExam">Новый экзамен</v:String>
+    <!--ExamEnd-->
+
+
+    <!--DocumentsPage-->
+    <v:String x:Key="dp_SubmitText">Подтверждаю прочтение данного текста</v:String>
+    <v:String x:Key="dp_Proceed">Для продолжения, подтвердите, что прочли текст</v:String>
+    <!--DocumentsPage-->
+
+
+    <!--DeviceCheckPage-->
+    <v:String x:Key="dc_Camera">Камера</v:String>
+    <v:String x:Key="dc_Microphone">Микрофон</v:String>
+    <v:String x:Key="dc_OutputSound">Звук</v:String>
+    <v:String x:Key="dc_CameraHint">Выберите камеру</v:String>
+    <v:String x:Key="dc_MicrophoneHint">Выберите микрофон</v:String>
+    <v:String x:Key="dc_OutputSoundHint">Выберите звук</v:String>
+    <!--DeviceCheckPage-->
+
+
+    <!--ChatWindow-->
+    <v:String x:Key="cw_Title">Чат</v:String>
+    <v:String x:Key="cw_Content">Техническая поддержка</v:String>
+    <!--ChatWindow-->
+
+    <!--BeforeExam-->
+    <v:String x:Key="be_Title">До экзамена</v:String>
+    <!--BeforeExam-->
+
+    <!--Headers-->
+    <!--DefaultHeader-->
+    <v:String x:Key="df_Days">Дней</v:String>
+    <v:String x:Key="df_Hours">Часов</v:String>
+    <v:String x:Key="df_Minutes">Минут</v:String>
+    <v:String x:Key="df_Seconds">Секунд</v:String>
+    <!--DefaultHeader-->
+    <!--VMHeader-->
+    <v:String x:Key="vm_MoveAway">Требуется отойти</v:String>
+    <!--VMHeader-->
+    <!--Headers-->
+</ResourceDictionary>
