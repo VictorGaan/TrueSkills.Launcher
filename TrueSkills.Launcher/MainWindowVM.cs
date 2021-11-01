@@ -124,7 +124,8 @@ namespace TrueSkills
                     File.WriteAllText(pathArgs,$"{Language.Name}&{Environment.CurrentDirectory}");
                     ProcessStartInfo startInfo = new ProcessStartInfo()
                     {
-                        FileName = path + "\\TrueSkills.exe",
+                        WorkingDirectory=path,
+                        FileName = "TrueSkills.exe",
                         Verb="runas",
                         UseShellExecute = true
                     };

@@ -5,6 +5,7 @@
     <!--All Window-->
     <v:String x:Key="a_DemoExam">Демонстрационный Экзамен</v:String>
     <v:String x:Key="a_Error">Ошибка</v:String>
+    <v:String x:Key="a_Auth">Требуется авторизация</v:String>
     <v:String x:Key="a_Proceed">Продолжить</v:String>
     <v:String x:Key="a_Mice">Подключено больше одной мыши</v:String>
     <v:String x:Key="a_Step1">Экзамен еще на начался</v:String>
