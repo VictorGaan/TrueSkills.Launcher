@@ -120,12 +120,13 @@ namespace TrueSkills
             {
                 case Status.Ready:
                     var path = Directory.GetDirectories(APP_DIRECTORY)[0];
-                    var startInfo = new ProcessStartInfo
+                    var pathArgs = path + "\\Args.txt";
+                    File.WriteAllText(pathArgs,$"{Language.Name}&{Environment.CurrentDirectory}");
+                    ProcessStartInfo startInfo = new ProcessStartInfo()
                     {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        FileName = "dotnet",
-                        Arguments = path + "\\TrueSkills.dll" + $" {Language.Name} {Environment.CurrentDirectory}",
+                        FileName = path + "\\TrueSkills.exe",
+                        Verb="runas",
+                        UseShellExecute = true
                     };
                     Process.Start(startInfo);
                     Application.Current.Shutdown();
