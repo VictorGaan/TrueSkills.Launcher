@@ -30,7 +30,7 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Left">
             <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{DynamicResource lm_Version}"/>
-            <TextBlock Margin="0 20 0 0" Style="{StaticResource DefaultTextBlock}" Text="{Binding Version}"></TextBlock>
+            <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{Binding Version}"></TextBlock>
             <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{DynamicResource lm_Support}">
                 <b:Interaction.Triggers>
                     <b:EventTrigger EventName="MouseDown">
