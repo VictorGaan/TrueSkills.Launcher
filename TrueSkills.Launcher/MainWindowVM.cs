@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Microsoft.Web.WebView2.Core;
+using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -19,6 +20,7 @@ namespace TrueSkills
         const string SUPPORT_SITE = "https://help.trueskills.ru";
         const string DOWNLOAD_APP = "https://codeload.github.com/VictorGaan/Build/zip/refs/heads/master";
         const string DOWNLOAD_APP_VERSION = "https://raw.githubusercontent.com/VictorGaan/Build/master/Version.txt";
+        const string WEBVIEW2_RUNTIME = "https://go.microsoft.com/fwlink/p/?LinkId=2124703";
 
         string APP_DIRECTORY = Path.GetTempPath() + "TrueSkillsApp";
         public event EventHandler LanguageChanged;
@@ -114,6 +116,18 @@ namespace TrueSkills
             CheckUpdates();
         }
 
+        private string GetVersionRuntime()
+        {
+            try
+            {
+                return CoreWebView2Environment.GetAvailableBrowserVersionString();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         private void MakeApp()
         {
             switch (Status)
@@ -121,21 +135,39 @@ namespace TrueSkills
                 case Status.Ready:
                     var path = Directory.GetDirectories(APP_DIRECTORY)[0];
                     var pathArgs = path + "\\Args.txt";
-                    File.WriteAllText(pathArgs,$"{Language.Name}&{Environment.CurrentDirectory}");
+                    File.WriteAllText(pathArgs, $"{Language.Name}&{Environment.CurrentDirectory}");
+                    var pathRuntime = APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe";
+                    Process process = null;
+                    if (GetVersionRuntime() == null)
+                    {
+                        if (File.Exists(pathRuntime))
+                        {
+                            ProcessStartInfo startInfoRuntime = new ProcessStartInfo()
+                            {
+                                WorkingDirectory = APP_DIRECTORY,
+                                FileName = "MicrosoftEdgeWebview2Setup.exe",
+                                UseShellExecute = true
+                            };
+                            process = Process.Start(startInfoRuntime);
+                        }
+                    }
+                    if (process != null)
+                    {
+                        process.WaitForExit();
+                    }
                     ProcessStartInfo startInfo = new ProcessStartInfo()
                     {
-                        WorkingDirectory=path,
+                        WorkingDirectory = path,
                         FileName = "TrueSkills.exe",
-                        Verb="runas",
+                        Verb = "runas",
                         UseShellExecute = true
                     };
                     Process.Start(startInfo);
-                    Application.Current.Shutdown();
                     break;
                 case Status.Failed:
                 case Status.DownloadingApp:
                 case Status.DownloadingUpdate:
-                    Updates();
+                    InstallAppFiles();
                     break;
                 default:
                     break;
@@ -169,7 +201,10 @@ namespace TrueSkills
                 }
                 else
                 {
-                    Status = Status.Failed;
+                    if (!File.Exists(path) && File.Exists(APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe"))
+                    {
+                        Status = Status.Failed;
+                    }
                 }
             }
             catch (Exception ex)
@@ -180,29 +215,26 @@ namespace TrueSkills
         }
 
 
-        private void Updates()
-        {
-            switch (Status)
-            {
-                case Status.DownloadingApp:
-                case Status.DownloadingUpdate:
-                case Status.Failed:
-                    InstallAppFiles();
-                    break;
-            }
-        }
-
         private void InstallAppFiles()
         {
-            WebClient webClient = new WebClient();
             ProgressBarVisible = Visibility.Visible;
-            webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-            webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
-            if (!Directory.Exists(APP_DIRECTORY))
+            Directory.CreateDirectory(APP_DIRECTORY);
+            if (GetVersionRuntime() == null && !File.Exists(APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe"))
             {
-                Directory.CreateDirectory(APP_DIRECTORY);
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+                    webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
+                    webClient.DownloadFileAsync(new Uri(WEBVIEW2_RUNTIME), APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe");
+                }
             }
-            webClient.DownloadFileAsync(new Uri(DOWNLOAD_APP), APP_DIRECTORY + "\\Build.zip");
+            using (WebClient webClient = new WebClient())
+            {
+                webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+                webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
+                webClient.DownloadFileAsync(new Uri(DOWNLOAD_APP), APP_DIRECTORY + "\\Build.zip");
+            }
+
         }
 
         private string _onlineVersion;
@@ -216,33 +248,59 @@ namespace TrueSkills
 
             if (!Directory.Exists(APP_DIRECTORY))
             {
+                Directory.CreateDirectory(APP_DIRECTORY);
                 Status = Status.DownloadingApp;
             }
-            if (!IsNewApp(_onlineVersion) && Directory.Exists(APP_DIRECTORY))
+
+
+            //Если новая версия
+            if (IsNewApp(_onlineVersion))
             {
                 var zip = ExistsZip();
-                if (!IsEmpty() && zip == null)
+                if (Directory.Exists(APP_DIRECTORY))
                 {
-                    Status = Status.DownloadingApp;
-                }
-                else if (IsEmpty() && zip == null)
-                {
-                    Status = Status.Ready;
-                }
-                else
-                {
-                    Status = Status.Failed;
+                    if (IsEmpty())
+                    {
+                        if (zip == null)
+                        {
+                            Status = Status.DownloadingUpdate;
+                        }
+                        if (zip == true || zip == false)
+                        {
+                            Status = Status.Failed;
+                        }
+                        if (zip == false)
+                        {
+                            Status = Status.DownloadingUpdate;
+                        }
+                    }
+                    else
+                    {
+                        Status = Status.DownloadingApp;
+                    }
                 }
             }
-            if (IsNewApp(_onlineVersion) && Directory.Exists(APP_DIRECTORY))
+            //Если совпадают
+            if (!IsNewApp(_onlineVersion))
             {
-                if (ExistsZip() == null)
+                var zip = ExistsZip();
+                if (Directory.Exists(APP_DIRECTORY))
                 {
-                    Status = Status.DownloadingUpdate;
-                }
-                else
-                {
-                    Status = Status.Failed;
+                    if (IsEmpty())
+                    {
+                        if (zip == null)
+                        {
+                            Status = Status.Ready;
+                        }
+                        if (zip == true || zip == false)
+                        {
+                            Status = Status.Failed;
+                        }
+                    }
+                    else
+                    {
+                        Status = Status.DownloadingApp;
+                    }
                 }
             }
         }
@@ -268,7 +326,7 @@ namespace TrueSkills
             var directory = Environment.CurrentDirectory + "\\Languages";
             if (!Directory.Exists(directory))
             {
-                MessageBox.Show("Ошибка загрузки языковых пакетов. Не найдена директория с языковыми пакетами.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(_currentResource["a_Language1"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             foreach (var item in Directory.GetFiles(directory))
             {
@@ -280,7 +338,7 @@ namespace TrueSkills
                 catch
                 {
 
-                    MessageBox.Show("Ошибка загрузки языковых пакетов. Не верный формат, языкового пакета.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(_currentResource["a_Language2"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -339,22 +397,29 @@ namespace TrueSkills
         /// <summary>
         /// 
         /// </summary>
-        /// <returns>True, если файл архива,есть и исправен. False, что файл есть, но не исправен. NULL, файла нет</returns>
+        /// <returns>True, если файл архива,есть и исправен. False, что файл есть, но не исправен, либо его нет</returns>
         private bool? ExistsZip()
         {
             foreach (var item in Directory.GetFiles(APP_DIRECTORY))
             {
-                try
+                if (item.Contains(".zip"))
                 {
-                    using (var zipFile = ZipFile.OpenRead(item))
+                    try
                     {
-                        var entries = zipFile.Entries;
-                        return true;
+                        using (var zipFile = ZipFile.OpenRead(item))
+                        {
+                            var entries = zipFile.Entries;
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        return false;
                     }
                 }
-                catch
+                else
                 {
-                    return false;
+                    return null;
                 }
             }
             return null;
@@ -366,7 +431,7 @@ namespace TrueSkills
         /// <returns>True, если директория не пустая</returns>
         private bool IsEmpty()
         {
-            return Directory.GetDirectories(APP_DIRECTORY).Any();
+            return Directory.GetFiles(APP_DIRECTORY).Any();
         }
 
         /// <summary>

@@ -8,6 +8,9 @@
     <v:String x:Key="a_Auth">Требуется авторизация</v:String>
     <v:String x:Key="a_Proceed">Продолжить</v:String>
     <v:String x:Key="a_Mice">Подключено больше одной мыши</v:String>
+    <v:String x:Key="a_Language1">Ошибка загрузки языковых пакетов. Не найдена директория с языковыми пакетами.</v:String>
+    <v:String x:Key="a_Language2">Ошибка загрузки языковых пакетов. Не верный формат языкового пакета.</v:String>
+    <v:String x:Key="a_Network">Нет интернета.</v:String>
     <v:String x:Key="a_Step1">Экзамен еще на начался</v:String>
     <v:String x:Key="a_Step2">Экзамен начался, отображение документов</v:String>
     <v:String x:Key="a_Step3">Экзамен начался, модуль еще не начался</v:String>
@@ -44,7 +47,7 @@
     <v:String x:Key="tm_AuthorizationCommand">Авторизация</v:String>
     <v:String x:Key="tm_EmptyError">Пустое значение</v:String>
     <v:String x:Key="tm_NumberError">Числовые значения для данного поля недопустимы</v:String>
-    <v:String x:Key="tm_PunctuationError">Данное поле должно включать пробелы и тире (“-”).</v:String>
+    <v:String x:Key="tm_PunctuationError">К вводу доступны только русские, латинские буквы, а также пробел и тире.</v:String>
     <v:String x:Key="tm_RangeError">Количество символов для данного поля должны быть в диапазоне 5-255</v:String>
     <v:String x:Key="tm_LatinOrNumberError">Для данного поля, возможны только латинские буквы и числа</v:String>
     <v:String x:Key="tm_WhiteSpaceError">Пробелы нельзя использовать для данного поля</v:String>
