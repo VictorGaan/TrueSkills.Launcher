@@ -75,7 +75,6 @@ namespace TrueSkills
                     case Status.Ready:
                         Content = $"{_currentResource["lm_Ready"]}";
                         break;
-                        break;
                     case Status.DownloadingApp:
                         Content = $"{_currentResource["lm_DownloadingApp"]}";
                         break;
@@ -136,7 +135,7 @@ namespace TrueSkills
                     {
                         return;
                     }
-                    
+
                     break;
                 case Status.DownloadingApp:
                 case Status.DownloadingUpdate:
@@ -158,12 +157,28 @@ namespace TrueSkills
             }
         }
 
+        private bool IsValidZip(string path)
+        {
+            try
+            {
+                using (var zipFile = ZipFile.OpenRead(path))
+                {
+                    var entries = zipFile.Entries;
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             try
             {
-                var path = PathToZip();
-                if (path != null)
+                string path = PathToZip();
+                if (IsValidZip(path))
                 {
                     ProgressBarVisible = Visibility.Collapsed;
                     ZipFile.ExtractToDirectory(path, APP_DIRECTORY, true);
@@ -171,6 +186,11 @@ namespace TrueSkills
                     SaveVersion();
                     IsEnabledButton = true;
                     Status = Status.Ready;
+                }
+                else
+                {
+                    MessageBox.Show(_currentResource["a_ErrorZip"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    Status = Status.DownloadingApp;
                 }
             }
             catch (Exception ex)
@@ -230,7 +250,7 @@ namespace TrueSkills
                     }
                     else
                     {
-                        if (zip!=null)
+                        if (zip != null)
                         {
                             Status = Status.DownloadingApp;
                         }

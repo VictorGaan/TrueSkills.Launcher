@@ -32,6 +32,7 @@
     <v:String x:Key="lm_DownloadingApp">Загрузить приложение</v:String>
     <v:String x:Key="lm_DownloadingUpdate">Загрузить обновление</v:String>
     <v:String x:Key="lm_LanguageTitle">Язык</v:String>
+    <v:String x:Key="lm_ErrorZip">Ошибка архива</v:String>
     <v:String x:Key="lm_Ready">Старт</v:String>
     <v:String x:Key="lm_Support">Помощь</v:String>
     <v:String x:Key="lm_Version">Версия</v:String>
