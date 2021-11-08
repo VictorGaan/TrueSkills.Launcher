@@ -256,34 +256,38 @@ namespace TrueSkills
             //Если новая версия
             if (IsNewApp(_onlineVersion))
             {
-                var zip = ExistsZip();
+                var zip = PathToZip();
                 if (Directory.Exists(APP_DIRECTORY))
                 {
+                    //Если есть файлы
                     if (IsEmpty())
                     {
                         if (zip == null)
                         {
                             Status = Status.DownloadingUpdate;
                         }
-                        if (zip == true || zip == false)
+                        else
                         {
                             Status = Status.Failed;
-                        }
-                        if (zip == false)
-                        {
-                            Status = Status.DownloadingUpdate;
                         }
                     }
                     else
                     {
-                        Status = Status.DownloadingApp;
+                        if (zip!=null)
+                        {
+                            Status = Status.Failed;
+                        }
+                        else
+                        {
+                            Status = Status.DownloadingUpdate;
+                        }
                     }
                 }
             }
             //Если совпадают
             if (!IsNewApp(_onlineVersion))
             {
-                var zip = ExistsZip();
+                var zip = PathToZip();
                 if (Directory.Exists(APP_DIRECTORY))
                 {
                     if (IsEmpty())
@@ -292,14 +296,21 @@ namespace TrueSkills
                         {
                             Status = Status.Ready;
                         }
-                        if (zip == true || zip == false)
+                        else
                         {
                             Status = Status.Failed;
                         }
                     }
                     else
                     {
-                        Status = Status.DownloadingApp;
+                        if (zip != null)
+                        {
+                            Status = Status.Failed;
+                        }
+                        else
+                        {
+                            Status = Status.DownloadingApp;
+                        }
                     }
                 }
             }
@@ -394,44 +405,9 @@ namespace TrueSkills
             Process.Start(startInfo);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>True, если файл архива,есть и исправен. False, что файл есть, но не исправен, либо его нет</returns>
-        private bool? ExistsZip()
-        {
-            foreach (var item in Directory.GetFiles(APP_DIRECTORY))
-            {
-                if (item.Contains(".zip"))
-                {
-                    try
-                    {
-                        using (var zipFile = ZipFile.OpenRead(item))
-                        {
-                            var entries = zipFile.Entries;
-                            return true;
-                        }
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>True, если директория не пустая</returns>
         private bool IsEmpty()
         {
-            return Directory.GetFiles(APP_DIRECTORY).Any();
+            return PathToZip() != null || Directory.GetFiles(APP_DIRECTORY).Any() || Directory.GetDirectories(APP_DIRECTORY).Any();
         }
 
         /// <summary>
@@ -452,7 +428,7 @@ namespace TrueSkills
                 }
                 catch
                 {
-                    return null;
+                    return item;
                 }
             }
             return null;
