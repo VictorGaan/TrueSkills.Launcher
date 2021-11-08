@@ -28,7 +28,6 @@
     <v:String x:Key="lm_Title">Лаунчер</v:String>
     <v:String x:Key="lm_DownloadingApp">Загрузить приложение</v:String>
     <v:String x:Key="lm_DownloadingUpdate">Загрузить обновление</v:String>
-    <v:String x:Key="lm_Failed">Ошибка обновления - Повторить</v:String>
     <v:String x:Key="lm_LanguageTitle">Язык</v:String>
     <v:String x:Key="lm_Ready">Старт</v:String>
     <v:String x:Key="lm_Support">Помощь</v:String>

@@ -20,7 +20,6 @@ namespace TrueSkills
         const string SUPPORT_SITE = "https://help.trueskills.ru";
         const string DOWNLOAD_APP = "https://codeload.github.com/VictorGaan/Build/zip/refs/heads/master";
         const string DOWNLOAD_APP_VERSION = "https://raw.githubusercontent.com/VictorGaan/Build/master/Version.txt";
-        const string WEBVIEW2_RUNTIME = "https://go.microsoft.com/fwlink/p/?LinkId=2124703";
 
         string APP_DIRECTORY = Path.GetTempPath() + "TrueSkillsApp";
         public event EventHandler LanguageChanged;
@@ -76,8 +75,6 @@ namespace TrueSkills
                     case Status.Ready:
                         Content = $"{_currentResource["lm_Ready"]}";
                         break;
-                    case Status.Failed:
-                        Content = $"{_currentResource["lm_Failed"]}";
                         break;
                     case Status.DownloadingApp:
                         Content = $"{_currentResource["lm_DownloadingApp"]}";
@@ -116,18 +113,6 @@ namespace TrueSkills
             CheckUpdates();
         }
 
-        private string GetVersionRuntime()
-        {
-            try
-            {
-                return CoreWebView2Environment.GetAvailableBrowserVersionString();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         private void MakeApp()
         {
             switch (Status)
@@ -136,35 +121,23 @@ namespace TrueSkills
                     var path = Directory.GetDirectories(APP_DIRECTORY)[0];
                     var pathArgs = path + "\\Args.txt";
                     File.WriteAllText(pathArgs, $"{Language.Name}&{Environment.CurrentDirectory}");
-                    var pathRuntime = APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe";
-                    Process process = null;
-                    if (GetVersionRuntime() == null)
+                    try
                     {
-                        if (File.Exists(pathRuntime))
+                        ProcessStartInfo startInfo = new ProcessStartInfo()
                         {
-                            ProcessStartInfo startInfoRuntime = new ProcessStartInfo()
-                            {
-                                WorkingDirectory = APP_DIRECTORY,
-                                FileName = "MicrosoftEdgeWebview2Setup.exe",
-                                UseShellExecute = true
-                            };
-                            process = Process.Start(startInfoRuntime);
-                        }
+                            WorkingDirectory = path,
+                            FileName = "TrueSkills.exe",
+                            Verb = "runas",
+                            UseShellExecute = true
+                        };
+                        Process.Start(startInfo);
                     }
-                    if (process != null)
+                    catch
                     {
-                        process.WaitForExit();
+                        return;
                     }
-                    ProcessStartInfo startInfo = new ProcessStartInfo()
-                    {
-                        WorkingDirectory = path,
-                        FileName = "TrueSkills.exe",
-                        Verb = "runas",
-                        UseShellExecute = true
-                    };
-                    Process.Start(startInfo);
+                    
                     break;
-                case Status.Failed:
                 case Status.DownloadingApp:
                 case Status.DownloadingUpdate:
                     InstallAppFiles();
@@ -199,18 +172,11 @@ namespace TrueSkills
                     IsEnabledButton = true;
                     Status = Status.Ready;
                 }
-                else
-                {
-                    if (!File.Exists(path) && File.Exists(APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe"))
-                    {
-                        Status = Status.Failed;
-                    }
-                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-                Status = Status.Failed;
+                Status = Status.DownloadingApp;
             }
         }
 
@@ -219,15 +185,6 @@ namespace TrueSkills
         {
             ProgressBarVisible = Visibility.Visible;
             Directory.CreateDirectory(APP_DIRECTORY);
-            if (GetVersionRuntime() == null && !File.Exists(APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe"))
-            {
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-                    webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
-                    webClient.DownloadFileAsync(new Uri(WEBVIEW2_RUNTIME), APP_DIRECTORY + "\\MicrosoftEdgeWebview2Setup.exe");
-                }
-            }
             using (WebClient webClient = new WebClient())
             {
                 webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
@@ -268,14 +225,14 @@ namespace TrueSkills
                         }
                         else
                         {
-                            Status = Status.Failed;
+                            Status = Status.DownloadingApp;
                         }
                     }
                     else
                     {
                         if (zip!=null)
                         {
-                            Status = Status.Failed;
+                            Status = Status.DownloadingApp;
                         }
                         else
                         {
@@ -298,19 +255,12 @@ namespace TrueSkills
                         }
                         else
                         {
-                            Status = Status.Failed;
+                            Status = Status.DownloadingApp;
                         }
                     }
                     else
                     {
-                        if (zip != null)
-                        {
-                            Status = Status.Failed;
-                        }
-                        else
-                        {
-                            Status = Status.DownloadingApp;
-                        }
+                        Status = Status.DownloadingApp;
                     }
                 }
             }
