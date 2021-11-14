@@ -4,116 +4,133 @@
 
     <!--All Window-->
     <v:String x:Key="a_DemoExam">Demo Exam</v:String>
-    <v:String x:Key="a_Error">Ошибка</v:String>
-    <v:String x:Key="a_Auth">Требуется авторизация</v:String>
-    <v:String x:Key="a_Proceed">Продолжить</v:String>
-    <v:String x:Key="a_Mice">Подключено больше одной мыши</v:String>
-    <v:String x:Key="a_Step1">Экзамен еще на начался</v:String>
-    <v:String x:Key="a_Step2">Экзамен начался, отображение документов</v:String>
-    <v:String x:Key="a_Step3">Экзамен начался, модуль еще не начался</v:String>
-    <v:String x:Key="a_Step4">Экзамен начался, отображение задания</v:String>
-    <v:String x:Key="a_Step5">Экзамен начался, модуль идет</v:String>
-    <v:String x:Key="a_Step6">Экзамен закончен</v:String>
-    <v:String x:Key="a_Code1">Данные авторизации некорректны</v:String>
-    <v:String x:Key="a_Code2">Отсутствует токен</v:String>
-    <v:String x:Key="a_Code6">Файл не найден</v:String>
-    <v:String x:Key="a_Code7">Идентификатор не соответствует файлу</v:String>
-    <v:String x:Key="a_Code8">VM не обнаружена</v:String>
-    <v:String x:Key="a_Code9">VM не обнаружена</v:String>
-    <v:String x:Key="a_Code10">Комната не найдена</v:String>
+    <v:String x:Key="a_Error">Error</v:String>
+    <v:String x:Key="a_Auth">Authorization required</v:String>
+    <v:String x:Key="a_Proceed">Proceed</v:String>
+    <v:String x:Key="a_Module1">Before the module</v:String>
+    <v:String x:Key="a_Module2">Module</v:String>
+    <v:String x:Key="a_NotificationTitle1">Notification</v:String>
+    <v:String x:Key="a_NotificationTitle2">Posts</v:String>
+    <v:String x:Key="a_NotificationSound">The sound spoken into the microphone is reproduced from the speaker.</v:String>
+    <v:String x:Key="a_NotificationChat1">You got a new message in the room with an expert, check the chat!</v:String>
+    <v:String x:Key="a_NotificationChat2">You received a new message in the room from those. help, check the chat!</v:String>
+    <v:String x:Key="a_Network">No Internet.</v:String>
+    <v:String x:Key="a_Step1">The exam has not yet begun.</v:String>
+    <v:String x:Key="a_Step2">Exam started, displaying documents.</v:String>
+    <v:String x:Key="a_Step3">The exam has started, the module has not started yet.</v:String>
+    <v:String x:Key="a_Step4">The exam has started, displaying the assignment.</v:String>
+    <v:String x:Key="a_Step5">The exam has begun, the module is in progress.</v:String>
+    <v:String x:Key="a_Step6">Exam finished.</v:String>
+    <v:String x:Key="a_Code1">Authorization data is incorrect.</v:String>
+    <v:String x:Key="a_Code2">Missing token</v:String>
+    <v:String x:Key="a_Code6">File not found</v:String>
+    <v:String x:Key="a_Code7">The identifier does not match the file</v:String>
+    <v:String x:Key="a_Code8">VM not found</v:String>
+    <v:String x:Key="a_Code9">VM not found</v:String>
+    <v:String x:Key="a_Code10">Room not found</v:String>
+    <v:String x:Key="a_Question">Question</v:String>
+    <v:String x:Key="a_ServerNetwork">Loss of connection on the server side</v:String>
+    <v:String x:Key="a_ClientNetwork">Loss of connection on the client side</v:String>
     <!--All Window-->
-    
+
     <!--Launcher-->
     <!--MainWindow-->
-    <v:String x:Key="lm_Title">Лаунчер</v:String>
-    <v:String x:Key="lm_DownloadingApp">Загрузить приложение</v:String>
-    <v:String x:Key="lm_DownloadingUpdate">Загрузить обновление</v:String>
-    <v:String x:Key="lm_LanguageTitle">Язык</v:String>
-    <v:String x:Key="lm_ErrorZip">Ошибка архива.</v:String>
-    <v:String x:Key="lm_Ready">Старт</v:String>
-    <v:String x:Key="lm_Support">Помощь</v:String>
-    <v:String x:Key="lm_Version">Версия</v:String>
+    <v:String x:Key="lm_Title">TrueSkills</v:String>
+    <v:String x:Key="lm_DownloadingApp">Download the app</v:String>
+    <v:String x:Key="lm_LanguageTitle">Language</v:String>
+    <v:String x:Key="lm_ErrorZip">Archive error</v:String>
+    <v:String x:Key="lm_Ready">Start</v:String>
+    <v:String x:Key="lm_Support">Help</v:String>
+    <v:String x:Key="lm_Version">Version</v:String>
     <!--Launcher-->
     <!--MainWindow-->
-    
+
     <!--TrueSkills-->
     <!--MainWindow-->
-    <v:String x:Key="tm_Title">Авторизация</v:String>
-    <v:String x:Key="tm_LFM">ФИО</v:String>
-    <v:String x:Key="tm_CodeExam">Код экзамена</v:String>
-    <v:String x:Key="tm_AuthorizationCommand">Авторизация</v:String>
-    <v:String x:Key="tm_EmptyError">Пустое значение</v:String>
-    <v:String x:Key="tm_NumberError">Числовые значения для данного поля недопустимы</v:String>
-    <v:String x:Key="tm_PunctuationError">Данное поле должно включать пробелы и тире (“-”).</v:String>
-    <v:String x:Key="tm_RangeError">Количество символов для данного поля должны быть в диапазоне 5-255</v:String>
-    <v:String x:Key="tm_LatinOrNumberError">Для данного поля, возможны только латинские буквы и числа</v:String>
-    <v:String x:Key="tm_WhiteSpaceError">Пробелы нельзя использовать для данного поля</v:String>
-    <v:String x:Key="tm_RangeExamError">Количество символов для данного поля должны быть в диапазоне 5-8</v:String>
+    <v:String x:Key="tm_Title">Authorization</v:String>
+    <v:String x:Key="tm_LFM">Full name</v:String>
+    <v:String x:Key="tm_CodeExam">Exam code</v:String>
+    <v:String x:Key="tm_AuthorizationCommand">Authorization</v:String>
+    <v:String x:Key="tm_EmptyError">Empty value.</v:String>
+    <v:String x:Key="tm_NumberError">Numeric values ​​for this field are not valid.</v:String>
+    <v:String x:Key="tm_PunctuationError">Only Russian, Latin letters, as well as a space and a dash are available for input.</v:String>
+    <v:String x:Key="tm_RangeError">The number of characters for this field must be in the range 5-255.</v:String>
+    <v:String x:Key="tm_LatinOrNumberError">For this field, only Latin letters and numbers are possible.</v:String>
+    <v:String x:Key="tm_WhiteSpaceError">Spaces cannot be used for this field.</v:String>
+    <v:String x:Key="tm_RangeExamError">The number of characters for this field must be in the range 2-8.</v:String>
     <!--MainWindow-->
-    
+
     <!--NavigationWindow-->
-    <v:String x:Key="nw_Title">Главное окно</v:String>
+    <v:String x:Key="nw_Title">Main window</v:String>
     <!--NavigationWindow-->
-    
+
     <!--SettingsPage-->
-    <v:String x:Key="sp_Title">Технические характеристики необходимые для экзамена</v:String>
-    <v:String x:Key="sp_Minimum">Минимальные</v:String>
-    <v:String x:Key="sp_Your">Ваши</v:String>
+    <v:String x:Key="sp_Title">Specifications required for the exam</v:String>
+    <v:String x:Key="sp_Minimum">Minimum</v:String>
+    <v:String x:Key="sp_Your">Your</v:String>
     <!--SettingsPage-->
     <!--TrueSkills-->
 
     <!--ReconnectionWindow-->
-    <v:String x:Key="rw_Title">Переподключение</v:String>
-    <v:String x:Key="rw_Reconnection">Связь с сервером оборвалась, требуется переподключение</v:String>
-    <v:String x:Key="rw_ReconnectionCommand">Переподключиться</v:String>
+    <v:String x:Key="rw_Title">Reconnection</v:String>
+    <v:String x:Key="rw_Reconnection">The connection to the server has been cut off, a reconnection is required.</v:String>
+    <v:String x:Key="rw_ReconnectionCommand">Reconnect</v:String>
     <!--ReconnectionWindow-->
-    
+
     <!--MoveAwayWindow-->
-    <v:String x:Key="ma_Title">Отошёл</v:String>
-    <v:String x:Key="ma_Return">Я вернулся</v:String>
+    <v:String x:Key="ma_Title">Move away</v:String>
+    <v:String x:Key="ma_Return">I'm back</v:String>
     <!--MoveAwayWindow-->
-    
+
     <!--ExamEnd-->
-    <v:String x:Key="ee_Title">Экзамен окончен</v:String>
-    <v:String x:Key="ee_End">Экзамен окончен</v:String>
-    <v:String x:Key="ee_NewExam">Новый экзамен</v:String>
+    <v:String x:Key="ee_Title">The exam is over</v:String>
+    <v:String x:Key="ee_End">The exam is over</v:String>
+    <v:String x:Key="ee_NewExam">New exam</v:String>
     <!--ExamEnd-->
-    
-    
+
+
     <!--DocumentsPage-->
-    <v:String x:Key="dp_SubmitText">Подтверждаю прочтение данного текста</v:String>
-    <v:String x:Key="dp_Proceed">Для продолжения, подтвердите, что прочли текст</v:String>
+    <v:String x:Key="dp_SubmitText">I confirm that I have read this text</v:String>
+    <v:String x:Key="dp_Proceed">To continue, confirm that you have read the text</v:String>
     <!--DocumentsPage-->
-    
-    
+
+
     <!--DeviceCheckPage-->
-    <v:String x:Key="dc_Camera">Камера</v:String>
-    <v:String x:Key="dc_Microphone">Микрофон</v:String>
-    <v:String x:Key="dc_OutputSound">Звук</v:String>
-    <v:String x:Key="dc_CameraHint">Выберите камеру</v:String>
-    <v:String x:Key="dc_MicrophoneHint">Выберите микрофон</v:String>
-    <v:String x:Key="dc_OutputSoundHint">Выберите звук</v:String>
+    <v:String x:Key="dc_Camera">Camera</v:String>
+    <v:String x:Key="dc_Microphone">Microphone</v:String>
+    <v:String x:Key="dc_OutputSound">Sound</v:String>
+    <v:String x:Key="dc_CameraHint">Select camera</v:String>
+    <v:String x:Key="dc_MicrophoneHint">Select microphone</v:String>
+    <v:String x:Key="dc_OutputSoundHint">Select sound</v:String>
     <!--DeviceCheckPage-->
-    
-    
+
+
     <!--ChatWindow-->
-    <v:String x:Key="cw_Title">Чат</v:String>
-    <v:String x:Key="cw_Content">Техническая поддержка</v:String>
+    <v:String x:Key="cw_Title">Chat</v:String>
+    <v:String x:Key="cw_Content">Technical support</v:String>
     <!--ChatWindow-->
-    
+
     <!--BeforeExam-->
-    <v:String x:Key="be_Title">До экзамена</v:String>
+    <v:String x:Key="be_Title">Before the exam</v:String>
     <!--BeforeExam-->
-    
+
+    <!--MessageBoxWindow-->
+    <v:String x:Key="mb_Yes">Yes</v:String>
+    <v:String x:Key="mb_No">No</v:String>
+    <v:String x:Key="mb_Ok">Ok</v:String>
+    <!--MessageBoxWindow-->
+
     <!--Headers-->
     <!--DefaultHeader-->
-    <v:String x:Key="df_Days">Дней</v:String>
-    <v:String x:Key="df_Hours">Часов</v:String>
-    <v:String x:Key="df_Minutes">Минут</v:String>
-    <v:String x:Key="df_Seconds">Секунд</v:String>
+    <v:String x:Key="df_Days">Days</v:String>
+    <v:String x:Key="df_Hours">Hours</v:String>
+    <v:String x:Key="df_Minutes">Minutes</v:String>
+    <v:String x:Key="df_Seconds">Seconds</v:String>
     <!--DefaultHeader-->
     <!--VMHeader-->
-    <v:String x:Key="vm_MoveAway">Требуется отойти</v:String>
+    <v:String x:Key="vm_MoveAway">Needs to move away</v:String>
+    <v:String x:Key="vm_ExamEnd">To finish</v:String>
+    <v:String x:Key="vm_SubmitEnd">Really finish the exam?</v:String>
     <!--VMHeader-->
     <!--Headers-->
 </ResourceDictionary>

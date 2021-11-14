@@ -30,8 +30,8 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Left">
             <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{DynamicResource lm_Version}"/>
-            <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{Binding Version}"></TextBlock>
-            <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{DynamicResource lm_Support}">
+            <TextBlock Style="{StaticResource DefaultTextBlock}" Text="{Binding Version,UpdateSourceTrigger=PropertyChanged}"></TextBlock>
+            <TextBlock Cursor="Hand" Style="{StaticResource DefaultTextBlock}" Text="{DynamicResource lm_Support}">
                 <b:Interaction.Triggers>
                     <b:EventTrigger EventName="MouseDown">
                         <b:InvokeCommandAction Command="{Binding SupportCommand}"></b:InvokeCommandAction>

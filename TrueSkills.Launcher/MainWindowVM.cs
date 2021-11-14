@@ -1,5 +1,4 @@
-﻿using Microsoft.Web.WebView2.Core;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -11,6 +10,7 @@ using System.Net;
 using System.Reactive;
 using System.Threading;
 using System.Windows;
+using TrueSkills.Launcher;
 using TrueSkills.Launcher.Properties;
 
 namespace TrueSkills
@@ -18,8 +18,7 @@ namespace TrueSkills
     public class MainWindowVM : ReactiveObject
     {
         const string SUPPORT_SITE = "https://help.trueskills.ru";
-        const string DOWNLOAD_APP = "https://codeload.github.com/VictorGaan/Build/zip/refs/heads/master";
-        const string DOWNLOAD_APP_VERSION = "https://raw.githubusercontent.com/VictorGaan/Build/master/Version.txt";
+        string DOWNLOAD_APP = "http://api.trueskills.devit.pw/api-v1/app?v=" + Settings.Default.Version;
 
         string APP_DIRECTORY = Path.GetTempPath() + "TrueSkillsApp";
         public event EventHandler LanguageChanged;
@@ -78,9 +77,6 @@ namespace TrueSkills
                     case Status.DownloadingApp:
                         Content = $"{_currentResource["lm_DownloadingApp"]}";
                         break;
-                    case Status.DownloadingUpdate:
-                        Content = $"{_currentResource["lm_DownloadingUpdate"]}";
-                        break;
                 }
             }
         }
@@ -118,16 +114,18 @@ namespace TrueSkills
             {
                 case Status.Ready:
                     var path = Directory.GetDirectories(APP_DIRECTORY)[0];
-                    var pathArgs = path + "\\Args.txt";
-                    File.WriteAllText(pathArgs, $"{Language.Name}&{Environment.CurrentDirectory}");
                     try
                     {
                         ProcessStartInfo startInfo = new ProcessStartInfo()
                         {
                             WorkingDirectory = path,
-                            FileName = "TrueSkills.exe",
+                            FileName = "dotnet",
+                            Arguments = $"TrueSkills.dll {Language.Name}",
                             Verb = "runas",
-                            UseShellExecute = true
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true,
                         };
                         Process.Start(startInfo);
                     }
@@ -138,7 +136,6 @@ namespace TrueSkills
 
                     break;
                 case Status.DownloadingApp:
-                case Status.DownloadingUpdate:
                     InstallAppFiles();
                     break;
                 default:
@@ -173,29 +170,44 @@ namespace TrueSkills
             }
         }
 
+        private string[] GetProperties()
+        {
+            return new string[]{ _currentResource["mb_Yes"].ToString(),_currentResource["mb_No"].ToString(),_currentResource["mb_Ok"].ToString()};
+        }
+
         private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             try
             {
                 string path = PathToZip();
+                string pathVersion = string.Empty;
                 if (IsValidZip(path))
                 {
                     ProgressBarVisible = Visibility.Collapsed;
                     ZipFile.ExtractToDirectory(path, APP_DIRECTORY, true);
                     File.Delete(path);
+                    pathVersion = $"{Directory.GetDirectories(APP_DIRECTORY)[0]}\\Version.txt";
+                    if (!File.Exists(pathVersion))
+                    {
+                        SetNewApp("1.0.0.0");
+                    }
+                    else
+                    {
+                        SetNewApp(File.ReadAllText(pathVersion));
+                    }
                     SaveVersion();
                     IsEnabledButton = true;
                     Status = Status.Ready;
                 }
                 else
                 {
-                    MessageBox.Show(_currentResource["a_ErrorZip"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    new MessageBoxWindow(_currentResource["lm_ErrorZip"].ToString(), _currentResource["a_Error"].ToString(),MessageBoxWindow.MessageBoxButton.Ok,GetProperties());
                     Status = Status.DownloadingApp;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                new MessageBoxWindow(ex.Message, _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
                 Status = Status.DownloadingApp;
             }
         }
@@ -214,114 +226,48 @@ namespace TrueSkills
 
         }
 
-        private string _onlineVersion;
         private void CheckUpdates()
         {
-            if (_onlineVersion == null)
-            {
-                WebClient webClient = new WebClient();
-                _onlineVersion = webClient.DownloadString(DOWNLOAD_APP_VERSION);
-            }
-
             if (!Directory.Exists(APP_DIRECTORY))
             {
                 Directory.CreateDirectory(APP_DIRECTORY);
                 Status = Status.DownloadingApp;
             }
 
-
-            //Если новая версия
-            if (IsNewApp(_onlineVersion))
+            var zip = PathToZip();
+            if (Directory.Exists(APP_DIRECTORY))
             {
-                var zip = PathToZip();
-                if (Directory.Exists(APP_DIRECTORY))
+                if (IsEmpty())
                 {
-                    //Если есть файлы
-                    if (IsEmpty())
+                    if (zip == null)
                     {
-                        if (zip == null)
-                        {
-                            Status = Status.DownloadingUpdate;
-                        }
-                        else
-                        {
-                            Status = Status.DownloadingApp;
-                        }
-                    }
-                    else
-                    {
-                        if (zip != null)
-                        {
-                            Status = Status.DownloadingApp;
-                        }
-                        else
-                        {
-                            Status = Status.DownloadingUpdate;
-                        }
-                    }
-                }
-            }
-            //Если совпадают
-            if (!IsNewApp(_onlineVersion))
-            {
-                var zip = PathToZip();
-                if (Directory.Exists(APP_DIRECTORY))
-                {
-                    if (IsEmpty())
-                    {
-                        if (zip == null)
-                        {
-                            Status = Status.Ready;
-                        }
-                        else
-                        {
-                            Status = Status.DownloadingApp;
-                        }
+                        Status = Status.Ready;
                     }
                     else
                     {
                         Status = Status.DownloadingApp;
                     }
                 }
+                else
+                {
+                    Status = Status.DownloadingApp;
+                }
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="version"></param>
-        /// <returns>True, если версии не совпадают</returns>
-        private bool IsNewApp(string version)
+        private void SetNewApp(string version)
         {
             var anotherVersion = Settings.Default.Version;
             if (version != anotherVersion)
             {
                 Version = version;
-                return true;
             }
-            return false;
         }
 
         private void GetLanguages()
         {
-            var directory = Environment.CurrentDirectory + "\\Languages";
-            if (!Directory.Exists(directory))
-            {
-                MessageBox.Show(_currentResource["a_Language1"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            foreach (var item in Directory.GetFiles(directory))
-            {
-                try
-                {
-                    var language = item.Replace(directory + "\\", "").Replace("Language.", "").Replace(".xaml", "");
-                    _languages.Add(new CultureInfo(language));
-                }
-                catch
-                {
-
-                    MessageBox.Show(_currentResource["a_Language2"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
+            _languages.Add(new CultureInfo("ru-RU"));
+            _languages.Add(new CultureInfo("en-US"));
         }
 
         public CultureInfo Language
@@ -380,28 +326,21 @@ namespace TrueSkills
             return PathToZip() != null || Directory.GetFiles(APP_DIRECTORY).Any() || Directory.GetDirectories(APP_DIRECTORY).Any();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>Возращает строку, когда файл, есть и его можно считать</returns>
         private string PathToZip()
         {
+            string result = null;
             foreach (var item in Directory.GetFiles(APP_DIRECTORY))
             {
-                try
+                if (item.Contains(".zip") || item.Contains(".7z") || item.Contains(".rar"))
                 {
-                    using (var zipFile = ZipFile.OpenRead(item))
-                    {
-                        var entries = zipFile.Entries;
-                        return item;
-                    }
+                    result = item;
                 }
-                catch
+                else
                 {
-                    return item;
+                    result = null;
                 }
             }
-            return null;
+            return result;
         }
         private void SaveVersion()
         {

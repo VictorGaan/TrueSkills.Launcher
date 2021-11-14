@@ -4,6 +4,5 @@
     {
         Ready,
         DownloadingApp,
-        DownloadingUpdate
     }
 }

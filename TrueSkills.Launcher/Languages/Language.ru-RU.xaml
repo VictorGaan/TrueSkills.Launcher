@@ -7,9 +7,13 @@
     <v:String x:Key="a_Error">Ошибка</v:String>
     <v:String x:Key="a_Auth">Требуется авторизация</v:String>
     <v:String x:Key="a_Proceed">Продолжить</v:String>
-    <v:String x:Key="a_Mice">Подключено больше одной мыши</v:String>
-    <v:String x:Key="a_Language1">Ошибка загрузки языковых пакетов. Не найдена директория с языковыми пакетами.</v:String>
-    <v:String x:Key="a_Language2">Ошибка загрузки языковых пакетов. Не верный формат языкового пакета.</v:String>
+    <v:String x:Key="a_Module1">До модуля</v:String>
+    <v:String x:Key="a_Module2">Модуль</v:String>
+    <v:String x:Key="a_NotificationTitle1">Уведомление</v:String>
+    <v:String x:Key="a_NotificationTitle2">Сообщения</v:String>
+    <v:String x:Key="a_NotificationSound">Звук сказанный в микрофон воспроизводится из динамика.</v:String>
+    <v:String x:Key="a_NotificationChat1">Вам пришло новое сообщение в комнате c экспертом, проверьте чат!</v:String>
+    <v:String x:Key="a_NotificationChat2">Вам пришло новое сообщение в комнате c тех. помощью, проверьте чат!</v:String>
     <v:String x:Key="a_Network">Нет интернета.</v:String>
     <v:String x:Key="a_Step1">Экзамен еще на начался</v:String>
     <v:String x:Key="a_Step2">Экзамен начался, отображение документов</v:String>
@@ -24,13 +28,15 @@
     <v:String x:Key="a_Code8">VM не обнаружена</v:String>
     <v:String x:Key="a_Code9">VM не обнаружена</v:String>
     <v:String x:Key="a_Code10">Комната не найдена</v:String>
+    <v:String x:Key="a_Question">Вопрос</v:String>
+    <v:String x:Key="a_ServerNetwork">Потеря соединения на стороне сервером</v:String>
+    <v:String x:Key="a_ClientNetwork">Потеря соединения на стороне клиента</v:String>
     <!--All Window-->
     
     <!--Launcher-->
     <!--MainWindow-->
-    <v:String x:Key="lm_Title">Лаунчер</v:String>
+    <v:String x:Key="lm_Title">TrueSkills</v:String>
     <v:String x:Key="lm_DownloadingApp">Загрузить приложение</v:String>
-    <v:String x:Key="lm_DownloadingUpdate">Загрузить обновление</v:String>
     <v:String x:Key="lm_LanguageTitle">Язык</v:String>
     <v:String x:Key="lm_ErrorZip">Ошибка архива</v:String>
     <v:String x:Key="lm_Ready">Старт</v:String>
@@ -107,7 +113,13 @@
     <!--BeforeExam-->
     <v:String x:Key="be_Title">До экзамена</v:String>
     <!--BeforeExam-->
-    
+
+    <!--MessageBoxWindow-->
+    <v:String x:Key="mb_Yes">Да</v:String>
+    <v:String x:Key="mb_No">Нет</v:String>
+    <v:String x:Key="mb_Ok">Ок</v:String>
+    <!--MessageBoxWindow-->
+
     <!--Headers-->
     <!--DefaultHeader-->
     <v:String x:Key="df_Days">Дней</v:String>
@@ -117,6 +129,8 @@
     <!--DefaultHeader-->
     <!--VMHeader-->
     <v:String x:Key="vm_MoveAway">Требуется отойти</v:String>
+    <v:String x:Key="vm_ExamEnd">Закончить</v:String>
+    <v:String x:Key="vm_SubmitEnd">Действительно закончить экзамен?</v:String>
     <!--VMHeader-->
     <!--Headers-->
 </ResourceDictionary>
