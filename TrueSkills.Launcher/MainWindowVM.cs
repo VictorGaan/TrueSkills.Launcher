@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Newtonsoft.Json;
+using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -7,8 +8,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Reactive;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using TrueSkills.Launcher;
 using TrueSkills.Launcher.Properties;
@@ -119,13 +122,11 @@ namespace TrueSkills
                         ProcessStartInfo startInfo = new ProcessStartInfo()
                         {
                             WorkingDirectory = path,
+                            UseShellExecute = true,
+                            Verb = "runas",
                             FileName = "dotnet",
                             Arguments = $"TrueSkills.dll {Language.Name}",
-                            Verb = "runas",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true,
+                            CreateNoWindow = true
                         };
                         Process.Start(startInfo);
                     }
@@ -133,7 +134,6 @@ namespace TrueSkills
                     {
                         return;
                     }
-
                     break;
                 case Status.DownloadingApp:
                     InstallAppFiles();
@@ -172,7 +172,7 @@ namespace TrueSkills
 
         private string[] GetProperties()
         {
-            return new string[]{ _currentResource["mb_Yes"].ToString(),_currentResource["mb_No"].ToString(),_currentResource["mb_Ok"].ToString()};
+            return new string[] { _currentResource["mb_Yes"].ToString(), _currentResource["mb_No"].ToString(), _currentResource["mb_Ok"].ToString() };
         }
 
         private void WebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
@@ -201,7 +201,7 @@ namespace TrueSkills
                 }
                 else
                 {
-                    new MessageBoxWindow(_currentResource["lm_ErrorZip"].ToString(), _currentResource["a_Error"].ToString(),MessageBoxWindow.MessageBoxButton.Ok,GetProperties());
+                    new MessageBoxWindow(_currentResource["lm_ErrorZip"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
                     Status = Status.DownloadingApp;
                 }
             }
@@ -228,20 +228,22 @@ namespace TrueSkills
 
         private void CheckUpdates()
         {
-            if (!Directory.Exists(APP_DIRECTORY))
+            var version = CheckVersion(DOWNLOAD_APP);
+            if (version != null)
             {
-                Directory.CreateDirectory(APP_DIRECTORY);
-                Status = Status.DownloadingApp;
-            }
-
-            var zip = PathToZip();
-            if (Directory.Exists(APP_DIRECTORY))
-            {
-                if (IsEmpty())
+                if (Directory.Exists(APP_DIRECTORY))
                 {
-                    if (zip == null)
+                    var zip = PathToZip();
+                    if (IsEmpty())
                     {
-                        Status = Status.Ready;
+                        if (zip == null)
+                        {
+                            Status = Status.Ready;
+                        }
+                        else
+                        {
+                            Status = Status.DownloadingApp;
+                        }
                     }
                     else
                     {
@@ -253,6 +255,12 @@ namespace TrueSkills
                     Status = Status.DownloadingApp;
                 }
             }
+            else
+            {
+                Status = Status.DownloadingApp;
+                ClearDirectory();
+            }
+
         }
 
         private void SetNewApp(string version)
@@ -326,6 +334,14 @@ namespace TrueSkills
             return PathToZip() != null || Directory.GetFiles(APP_DIRECTORY).Any() || Directory.GetDirectories(APP_DIRECTORY).Any();
         }
 
+        private void ClearDirectory()
+        {
+            if (Directory.Exists(APP_DIRECTORY))
+            {
+                Directory.Delete(APP_DIRECTORY, true);
+            }
+        }
+
         private string PathToZip()
         {
             string result = null;
@@ -342,10 +358,34 @@ namespace TrueSkills
             }
             return result;
         }
+
+
+
         private void SaveVersion()
         {
             Settings.Default.Version = Version;
             Settings.Default.Save();
+        }
+
+        private Text CheckVersion(string url)
+        {
+            using (WebClient client = new WebClient())
+            {
+                var response = client.DownloadString(DOWNLOAD_APP);
+                if (response.Contains("text"))
+                {
+                    return JsonConvert.DeserializeObject<Text>(response);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        public class Text
+        {
+            [JsonProperty("text")]
+            public string Content { get; set; }
         }
     }
 }

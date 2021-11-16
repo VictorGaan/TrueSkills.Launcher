@@ -13,12 +13,12 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid Background="{StaticResource HeaderBackColor}">
-            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" Text="{Binding Header}" Style="{StaticResource headerSetting}"></TextBlock>
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" Text="{Binding Header}" Style="{StaticResource DemoTextBlock}"></TextBlock>
         </Grid>
-        <TextBlock Grid.Row="1" Margin="10" Text="{Binding Text}" Style="{StaticResource demoTextBlock}"></TextBlock>
+        <TextBlock Grid.Row="1" Margin="10" Text="{Binding Text}" Style="{StaticResource DemoTextBlock}"></TextBlock>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Name="FButton"  Width="80" Margin="10" Visibility="{Binding FButtonVisibility}" Content="{Binding FContent}" Style="{StaticResource pushButton}"></Button>
-            <Button Name="SButton" Width="80" Margin="10" Visibility="{Binding SButtonVisibility}" Content="{Binding SContent}" Style="{StaticResource pushButton}"></Button>
+            <Button Name="FButton"  Width="80" Margin="10" Visibility="{Binding FButtonVisibility}" Content="{Binding FContent}" Style="{StaticResource DefaultButton}"></Button>
+            <Button Name="SButton" Width="80" Margin="10" Visibility="{Binding SButtonVisibility}" Content="{Binding SContent}" Style="{StaticResource DefaultButton}"></Button>
         </StackPanel>
     </Grid>
 </Window>
