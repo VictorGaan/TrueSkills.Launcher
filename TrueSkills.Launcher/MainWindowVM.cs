@@ -13,6 +13,7 @@ using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using TrueSkills.Launcher;
 using TrueSkills.Launcher.Properties;
 
@@ -108,6 +109,7 @@ namespace TrueSkills
             Language = Settings.Default.DefaultLanguage;
             SupportCommand = ReactiveCommand.Create(Support);
             MakeEventCommand = ReactiveCommand.Create(MakeApp);
+            Status = Status.Ready;
             CheckUpdates();
         }
 
@@ -122,8 +124,8 @@ namespace TrueSkills
                         ProcessStartInfo startInfo = new ProcessStartInfo()
                         {
                             WorkingDirectory = path,
-                            UseShellExecute = true,
-                            Verb = "runas",
+                            UseShellExecute = false,
+                            //Verb = "runas",
                             FileName = "dotnet",
                             Arguments = $"TrueSkills.dll {Language.Name}",
                             CreateNoWindow = true
@@ -228,7 +230,12 @@ namespace TrueSkills
 
         private void CheckUpdates()
         {
-            var version = CheckVersion(DOWNLOAD_APP);
+            Text version = null;
+            bool Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
+            {
+                version = CheckVersion(DOWNLOAD_APP);
+            });
+
             if (version != null)
             {
                 if (Directory.Exists(APP_DIRECTORY))
@@ -359,8 +366,6 @@ namespace TrueSkills
             return result;
         }
 
-
-
         private void SaveVersion()
         {
             Settings.Default.Version = Version;
@@ -386,6 +391,20 @@ namespace TrueSkills
         {
             [JsonProperty("text")]
             public string Content { get; set; }
+        }
+
+        public static bool ExecuteWithTimeLimit(TimeSpan timeSpan, Action codeBlock)
+        {
+            try
+            {
+                Task task = Task.Factory.StartNew(() => codeBlock());
+                task.Wait(timeSpan);
+                return task.IsCompleted;
+            }
+            catch (AggregateException ae)
+            {
+                throw ae.InnerExceptions[0];
+            }
         }
     }
 }
