@@ -109,7 +109,6 @@ namespace TrueSkills
             Language = Settings.Default.DefaultLanguage;
             SupportCommand = ReactiveCommand.Create(Support);
             MakeEventCommand = ReactiveCommand.Create(MakeApp);
-            Status = Status.Ready;
             CheckUpdates();
         }
 
@@ -125,7 +124,6 @@ namespace TrueSkills
                         {
                             WorkingDirectory = path,
                             UseShellExecute = false,
-                            //Verb = "runas",
                             FileName = "dotnet",
                             Arguments = $"TrueSkills.dll {Language.Name}",
                             CreateNoWindow = true
@@ -138,7 +136,15 @@ namespace TrueSkills
                     }
                     break;
                 case Status.DownloadingApp:
-                    InstallAppFiles();
+                    Text version = null;
+                    bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
+                    {
+                        version = CheckVersion(DOWNLOAD_APP);
+                    });
+                    if (version==null)
+                    {
+                        InstallAppFiles();
+                    }
                     break;
                 default:
                     break;
@@ -183,6 +189,7 @@ namespace TrueSkills
             {
                 string path = PathToZip();
                 string pathVersion = string.Empty;
+
                 if (IsValidZip(path))
                 {
                     ProgressBarVisible = Visibility.Collapsed;
@@ -225,13 +232,12 @@ namespace TrueSkills
                 webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
                 webClient.DownloadFileAsync(new Uri(DOWNLOAD_APP), APP_DIRECTORY + "\\Build.zip");
             }
-
         }
 
         private void CheckUpdates()
         {
             Text version = null;
-            bool Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
+            bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
             {
                 version = CheckVersion(DOWNLOAD_APP);
             });
@@ -377,19 +383,20 @@ namespace TrueSkills
             using (WebClient client = new WebClient())
             {
                 var response = client.DownloadString(DOWNLOAD_APP);
-                if (response.Contains("text"))
+                if (response.Contains("status"))
                 {
                     return JsonConvert.DeserializeObject<Text>(response);
                 }
                 else
                 {
+                    client.Dispose();
                     return null;
                 }
             }
         }
         public class Text
         {
-            [JsonProperty("text")]
+            [JsonProperty("status")]
             public string Content { get; set; }
         }
 
