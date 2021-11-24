@@ -25,7 +25,7 @@
 
         <Grid Visibility="{Binding ProgressBarVisible}" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="{Binding DownloadingProcess}" FontSize="14" HorizontalAlignment="Center" Style="{StaticResource DefaultTextBlock}"></TextBlock>
-            <controls:WindowsProgressRing Items="10"  Speed="0:0:2.5" Height="120" Width="120" Foreground="{StaticResource HeaderBackColor}"></controls:WindowsProgressRing>
+            <controls:WindowsProgressRing Items="10"  Speed="0:0:2.5" Height="160" Width="160" Foreground="{StaticResource HeaderBackColor}"></controls:WindowsProgressRing>
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Left">

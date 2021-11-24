@@ -141,7 +141,7 @@ namespace TrueSkills
                     {
                         version = CheckVersion(DOWNLOAD_APP);
                     });
-                    if (version==null)
+                    if (version == null)
                     {
                         InstallAppFiles();
                     }
@@ -155,10 +155,13 @@ namespace TrueSkills
         private void WebClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             _counter++;
-            if (_counter % 25 == 0)
+            if (IsEnabledButton)
             {
                 IsEnabledButton = false;
-                DownloadingProcess = ((e.BytesReceived / 1024f) / 1024f).ToString("#0.##") + $" Mb/s"; ;
+            }
+            if (_counter % 25 == 0)
+            {
+                DownloadingProcess = ((e.BytesReceived / 1024f) / 1024f).ToString("#0.##") + "/" + ((e.TotalBytesToReceive / 1024f) / 1024f).ToString("#0.##") + $"\nMb/s";
             }
         }
 
