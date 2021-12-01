@@ -161,7 +161,7 @@ namespace TrueSkills
             }
             if (_counter % 25 == 0)
             {
-                DownloadingProcess = ((e.BytesReceived / 1024f) / 1024f).ToString("#0.##") + "/" + ((e.TotalBytesToReceive / 1024f) / 1024f).ToString("#0.##") + $"\nMb/s";
+                DownloadingProcess = ((e.BytesReceived / 1024f) / 1024f).ToString("#0.##") + "/" + ((e.TotalBytesToReceive / 1024f) / 1024f).ToString("#0.##") + $"\nMb";
             }
         }
 
