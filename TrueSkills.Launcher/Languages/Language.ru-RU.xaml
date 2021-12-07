@@ -39,10 +39,12 @@
     <v:String x:Key="lm_DownloadingApp">Загрузить приложение</v:String>
     <v:String x:Key="lm_LanguageTitle">Язык</v:String>
     <v:String x:Key="lm_ErrorZip">Ошибка архива</v:String>
+    <v:String x:Key="lm_ErrorDownload">Ошибка при скачивании</v:String>
     <v:String x:Key="lm_Ready">Старт</v:String>
     <v:String x:Key="lm_Support">Помощь</v:String>
     <v:String x:Key="lm_Version">Версия</v:String>
     <v:String x:Key="lm_VersionNoExists">Отсутствует</v:String>
+    <v:String x:Key="lm_UnexpectedError">Непредвиденная ошибка</v:String>
     <!--Launcher-->
     <!--MainWindow-->
     

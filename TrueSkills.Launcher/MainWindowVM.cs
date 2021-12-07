@@ -21,13 +21,16 @@ namespace TrueSkills
 {
     public class MainWindowVM : ReactiveObject
     {
+        #region Consts
         const string SUPPORT_SITE = "https://help.trueskills.ru";
-        string DOWNLOAD_APP = "http://api.trueskills.devit.pw/api-v1/app?v=" + Settings.Default.Version;
-
+        string DOWNLOAD_URL = "http://api.trueskills.devit.pw/api-v1/app?v=" + Settings.Default.Version;
         string APP_DIRECTORY = Path.GetTempPath() + "TrueSkillsApp";
-        public event EventHandler LanguageChanged;
-        public ReactiveCommand<Unit, Unit> SupportCommand { get; }
-        public ReactiveCommand<Unit, Unit> MakeEventCommand { get; }
+        string APP_FOLDER = Path.GetTempPath() + "TrueSkillsApp\\" + "netcoreapp3.1";
+        string ZIP_FOLDER = Path.GetTempPath() + "TrueSkillsApp\\" + "Build.zip";
+        string VERSION_FILE = Path.GetTempPath() + "TrueSkillsApp\\" + "Build\\" + "Version.txt";
+        #endregion
+
+        #region Variables
         private ResourceDictionary _currentResource;
         private string _content;
         private string _version;
@@ -36,6 +39,13 @@ namespace TrueSkills
         private bool _isEnabledButton;
         private string _downloadingProcess;
         private Visibility _progressBarVisible;
+        #endregion
+
+        #region Properties
+        public event EventHandler LanguageChanged;
+        public ReactiveCommand<Unit, Unit> SupportCommand { get; }
+        public ReactiveCommand<Unit, Unit> MakeEventCommand { get; }
+
 
         public string DownloadingProcess
         {
@@ -92,20 +102,64 @@ namespace TrueSkills
                 return _languages;
             }
         }
+        #endregion
+
+        public void GetVersion()
+        {
+            if (!Directory.Exists(APP_DIRECTORY))
+            {
+                Version = _currentResource["lm_VersionNoExists"].ToString();
+                SetVersion();
+            }
+            if (Directory.Exists(APP_DIRECTORY) && !Directory.Exists(APP_FOLDER))
+            {
+                Version = _currentResource["lm_VersionNoExists"].ToString();
+                SetVersion();
+            }
+            if (Directory.Exists(APP_DIRECTORY) && Directory.Exists(APP_FOLDER) && !Directory.Exists(VERSION_FILE))
+            {
+                Version = _currentResource["lm_VersionNoExists"].ToString();
+                SetVersion();
+            }
+            if (Directory.Exists(APP_DIRECTORY) && Directory.Exists(APP_FOLDER) && Directory.Exists(VERSION_FILE))
+            {
+                Version = File.ReadAllText(VERSION_FILE);
+                SetVersion(false, Version);
+            }
+        }
+
+
+        private void SetVersion(bool isNewApp = true, string version = null)
+        {
+            if (isNewApp)
+            {
+                Settings.Default.Version = "1.0.0.0";
+            }
+            else
+            {
+                if (version != null)
+                {
+                    Settings.Default.Version = version;
+                }
+                else
+                {
+                    Settings.Default.Version = "1.0.0.0";
+                }
+            }
+            Settings.Default.Save();
+        }
+
         public MainWindowVM()
         {
             _languages = new ObservableCollection<CultureInfo>();
+            GetLanguages();
             ProgressBarVisible = Visibility.Collapsed;
             IsEnabledButton = true;
-            _version = Settings.Default.Version;
             if (Application.Current.Resources.MergedDictionaries[2] is ResourceDictionary resourceDictionary)
             {
                 _currentResource = resourceDictionary;
             }
-
-
             LanguageChanged += App_LanguageChanged;
-            GetLanguages();
             Language = Settings.Default.DefaultLanguage;
             SupportCommand = ReactiveCommand.Create(Support);
             MakeEventCommand = ReactiveCommand.Create(MakeApp);
@@ -117,12 +171,11 @@ namespace TrueSkills
             switch (Status)
             {
                 case Status.Ready:
-                    var path = Directory.GetDirectories(APP_DIRECTORY)[0];
                     try
                     {
                         ProcessStartInfo startInfo = new ProcessStartInfo()
                         {
-                            WorkingDirectory = path,
+                            WorkingDirectory = APP_FOLDER,
                             UseShellExecute = false,
                             FileName = "dotnet",
                             Arguments = $"TrueSkills.dll {Language.Name}",
@@ -144,15 +197,26 @@ namespace TrueSkills
         private int _counter = 0;
         private void WebClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            _counter++;
-            if (IsEnabledButton)
+            try
             {
-                IsEnabledButton = false;
+                _counter++;
+                if (IsEnabledButton)
+                {
+                    IsEnabledButton = false;
+                }
+                if (_counter % 25 == 0)
+                {
+                    DownloadingProcess = ((e.BytesReceived / 1024f) / 1024f).ToString("#0.##") + "/" + ((e.TotalBytesToReceive / 1024f) / 1024f).ToString("#0.##") + $"\nMb";
+                }
             }
-            if (_counter % 25 == 0)
+            catch (Exception)
             {
-                DownloadingProcess = ((e.BytesReceived / 1024f) / 1024f).ToString("#0.##") + "/" + ((e.TotalBytesToReceive / 1024f) / 1024f).ToString("#0.##") + $"\nMb";
+                new MessageBoxWindow(_currentResource["lm_UnexpectedError"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
+                ProgressBarVisible = Visibility.Collapsed;
+                IsEnabledButton = true;
+                return;
             }
+
         }
 
         private bool IsValidZip(string path)
@@ -171,6 +235,14 @@ namespace TrueSkills
             }
         }
 
+        private bool IsTroubleDownloadZip()
+        {
+            long length = new FileInfo(ZIP_FOLDER).Length;
+            if (length > 0)
+                return false;
+            return true;
+        }
+
         private string[] GetProperties()
         {
             return new string[] { _currentResource["mb_Yes"].ToString(), _currentResource["mb_No"].ToString(), _currentResource["mb_Ok"].ToString() };
@@ -182,50 +254,67 @@ namespace TrueSkills
             {
                 string path = PathToZip();
                 string pathVersion = string.Empty;
-
-                if (IsValidZip(path))
+                if (App.IsNetwork)
                 {
-                    ProgressBarVisible = Visibility.Collapsed;
-                    ZipFile.ExtractToDirectory(path, APP_DIRECTORY, true);
-                    File.Delete(path);
-                    pathVersion = $"{Directory.GetDirectories(APP_DIRECTORY)[0]}\\Version.txt";
-                    if (!File.Exists(pathVersion))
+                    if (IsValidZip(path))
                     {
-                        SetNewApp("1.0.0.0");
+                        ProgressBarVisible = Visibility.Collapsed;
+                        ZipFile.ExtractToDirectory(path, APP_DIRECTORY, true);
+                        File.Delete(path);
+                        IsEnabledButton = true;
+                        GetVersion();
+                        Status = Status.Ready;
                     }
                     else
                     {
-                        SetNewApp(File.ReadAllText(pathVersion));
+                        if (!IsTroubleDownloadZip())
+                        {
+                            new MessageBoxWindow(_currentResource["lm_ErrorDownload"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
+                            Status = Status.DownloadingApp;
+                            ProgressBarVisible = Visibility.Collapsed;
+                            IsEnabledButton = true;
+                        }
+                        else
+                        {
+                            new MessageBoxWindow(_currentResource["lm_ErrorZip"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
+                            Status = Status.DownloadingApp;
+                            ProgressBarVisible = Visibility.Collapsed;
+                            IsEnabledButton = true;
+                        }
                     }
-                    SaveVersion();
-                    IsEnabledButton = true;
-                    Status = Status.Ready;
                 }
                 else
                 {
-                    new MessageBoxWindow(_currentResource["lm_ErrorZip"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
+                    new MessageBoxWindow(_currentResource["lm_UnexpectedError"].ToString(), _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
+                    ProgressBarVisible = Visibility.Collapsed;
                     Status = Status.DownloadingApp;
+                    IsEnabledButton = true;
                 }
             }
             catch (Exception ex)
             {
                 new MessageBoxWindow(ex.Message, _currentResource["a_Error"].ToString(), MessageBoxWindow.MessageBoxButton.Ok, GetProperties());
                 Status = Status.DownloadingApp;
+                ProgressBarVisible = Visibility.Collapsed;
+                IsEnabledButton = true;
             }
         }
 
 
         private void InstallAppFiles()
         {
-            ProgressBarVisible = Visibility.Visible;
             Directory.CreateDirectory(APP_DIRECTORY);
             try
             {
-                using (WebClient webClient = new WebClient())
+                if (App.IsNetwork)
                 {
-                    webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-                    webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
-                    webClient.DownloadFileAsync(new Uri(DOWNLOAD_APP), APP_DIRECTORY + "\\Build.zip");
+                    using (WebClient webClient = new WebClient())
+                    {
+                        ProgressBarVisible = Visibility.Visible;
+                        webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+                        webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
+                        webClient.DownloadFileAsync(new Uri(DOWNLOAD_URL), ZIP_FOLDER);
+                    }
                 }
             }
             catch (Exception)
@@ -238,21 +327,13 @@ namespace TrueSkills
 
         private void CheckUpdates()
         {
-            CheckBuild();
-            Text version = null;
-            try
+            VersionText version = null;
+            bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(1000), () =>
             {
-                bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
-                {
-                    version = CheckVersion(DOWNLOAD_APP);
-                });
-            }
-            catch (Exception)
-            {
-                return;
-            }
+                version = CheckVersion(DOWNLOAD_URL);
+            });
 
-
+            GetVersion();
             if (version != null)
             {
                 if (Directory.Exists(APP_DIRECTORY))
@@ -262,7 +343,14 @@ namespace TrueSkills
                     {
                         if (zip == null)
                         {
-                            Status = Status.Ready;
+                            if (Directory.Exists(APP_FOLDER))
+                            {
+                                Status = Status.Ready;
+                            }
+                            else
+                            {
+                                Status = Status.DownloadingApp;
+                            }
                         }
                         else
                         {
@@ -287,30 +375,6 @@ namespace TrueSkills
 
         }
 
-        private void CheckBuild()
-        {
-            if (!Directory.Exists(APP_DIRECTORY))
-            {
-                Version = _currentResource["lm_VersionNoExists"].ToString();
-            }
-            if (Directory.Exists(APP_DIRECTORY))
-            {
-                if (!Directory.Exists(APP_DIRECTORY + "\\Build"))
-                {
-                    Version = _currentResource["lm_VersionNoExists"].ToString();
-                }
-            }
-
-        }
-
-        private void SetNewApp(string version)
-        {
-            var anotherVersion = Settings.Default.Version;
-            if (version != anotherVersion)
-            {
-                Version = version;
-            }
-        }
 
         private void GetLanguages()
         {
@@ -387,7 +451,7 @@ namespace TrueSkills
             string result = null;
             foreach (var item in Directory.GetFiles(APP_DIRECTORY))
             {
-                if (item.Contains(".zip") || item.Contains(".7z") || item.Contains(".rar"))
+                if (item.Contains(".zip"))
                 {
                     result = item;
                 }
@@ -399,35 +463,36 @@ namespace TrueSkills
             return result;
         }
 
-        private void SaveVersion()
-        {
-            Settings.Default.Version = Version;
-            Settings.Default.Save();
-        }
 
-        private Text CheckVersion(string url)
+        private VersionText CheckVersion(string url)
         {
-            using (WebClient client = new WebClient())
+            if (App.IsNetwork)
             {
-                var response = client.DownloadString(DOWNLOAD_APP);
-                if (response.Contains("status"))
+                using (WebClient client = new WebClient())
                 {
-                    return JsonConvert.DeserializeObject<Text>(response);
-                }
-                else
-                {
-                    client.Dispose();
-                    return null;
+                    try
+                    {
+                        var response = client.DownloadString(DOWNLOAD_URL);
+                        if (response.Contains("text"))
+                        {
+                            return JsonConvert.DeserializeObject<VersionText>(response);
+                        }
+                        else
+                        {
+                            client.Dispose();
+                            return null;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
                 }
             }
-        }
-        public class Text
-        {
-            [JsonProperty("status")]
-            public string Content { get; set; }
+            return null;
         }
 
-        public static bool ExecuteWithTimeLimit(TimeSpan timeSpan, Action codeBlock)
+        public bool ExecuteWithTimeLimit(TimeSpan timeSpan, Action codeBlock)
         {
             try
             {

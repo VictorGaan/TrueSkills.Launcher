@@ -43,7 +43,9 @@
     <v:String x:Key="lm_Support">Help</v:String>
     <v:String x:Key="lm_Version">Version</v:String>
     <v:String x:Key="lm_VersionNoExists">Does not exist</v:String>
-
+    <v:String x:Key="lm_UnexpectedError">Unexpected error</v:String>
+    <v:String x:Key="lm_ErrorDownload">Download error</v:String>
+    
     <!--Launcher-->
     <!--MainWindow-->
 
