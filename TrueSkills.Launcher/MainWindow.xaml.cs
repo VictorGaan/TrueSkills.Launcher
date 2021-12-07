@@ -24,7 +24,7 @@ namespace TrueSkills
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowVM();
+            DataContext = new MainWindowVM(this);
         }
     }
 }

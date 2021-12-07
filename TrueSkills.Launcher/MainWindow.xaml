@@ -7,7 +7,7 @@
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors" xmlns:controls="clr-namespace:NMT.Wpf.Controls;assembly=WindowsProgressRing"
         mc:Ignorable="d"
         Title="{DynamicResource lm_Title}" Style="{StaticResource DefaultWindow}" WindowStartupLocation="CenterScreen">
-    <Grid Background="{StaticResource BackColor}">
+    <Grid Background="{StaticResource BackColor}" Visibility="{Binding VisibilityWindow}">
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition/>

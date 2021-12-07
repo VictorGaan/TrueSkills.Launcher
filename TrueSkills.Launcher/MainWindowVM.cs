@@ -8,12 +8,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using TrueSkills.Launcher;
 using TrueSkills.Launcher.Properties;
 
@@ -27,7 +25,7 @@ namespace TrueSkills
         string APP_DIRECTORY = Path.GetTempPath() + "TrueSkillsApp";
         string APP_FOLDER = Path.GetTempPath() + "TrueSkillsApp\\" + "netcoreapp3.1";
         string ZIP_FOLDER = Path.GetTempPath() + "TrueSkillsApp\\" + "Build.zip";
-        string VERSION_FILE = Path.GetTempPath() + "TrueSkillsApp\\" + "Build\\" + "Version.txt";
+        string VERSION_FILE = Path.GetTempPath() + "TrueSkillsApp\\" + "netcoreapp3.1\\" + "Version.txt";
         #endregion
 
         #region Variables
@@ -45,7 +43,6 @@ namespace TrueSkills
         public event EventHandler LanguageChanged;
         public ReactiveCommand<Unit, Unit> SupportCommand { get; }
         public ReactiveCommand<Unit, Unit> MakeEventCommand { get; }
-
 
         public string DownloadingProcess
         {
@@ -116,12 +113,12 @@ namespace TrueSkills
                 Version = _currentResource["lm_VersionNoExists"].ToString();
                 SetVersion();
             }
-            if (Directory.Exists(APP_DIRECTORY) && Directory.Exists(APP_FOLDER) && !Directory.Exists(VERSION_FILE))
+            if (Directory.Exists(APP_DIRECTORY) && Directory.Exists(APP_FOLDER) && !File.Exists(VERSION_FILE))
             {
                 Version = _currentResource["lm_VersionNoExists"].ToString();
                 SetVersion();
             }
-            if (Directory.Exists(APP_DIRECTORY) && Directory.Exists(APP_FOLDER) && Directory.Exists(VERSION_FILE))
+            if (Directory.Exists(APP_DIRECTORY) && Directory.Exists(APP_FOLDER) && File.Exists(VERSION_FILE))
             {
                 Version = File.ReadAllText(VERSION_FILE);
                 SetVersion(false, Version);
@@ -149,8 +146,11 @@ namespace TrueSkills
             Settings.Default.Save();
         }
 
-        public MainWindowVM()
+        private Window _window;
+        public MainWindowVM(Window window)
         {
+
+            _window = window;
             _languages = new ObservableCollection<CultureInfo>();
             GetLanguages();
             ProgressBarVisible = Visibility.Collapsed;
@@ -163,30 +163,24 @@ namespace TrueSkills
             Language = Settings.Default.DefaultLanguage;
             SupportCommand = ReactiveCommand.Create(Support);
             MakeEventCommand = ReactiveCommand.Create(MakeApp);
+            GetVersion();
             CheckUpdates();
         }
-
         private void MakeApp()
         {
             switch (Status)
             {
                 case Status.Ready:
-                    try
+                    ProcessStartInfo startInfo = new ProcessStartInfo()
                     {
-                        ProcessStartInfo startInfo = new ProcessStartInfo()
-                        {
-                            WorkingDirectory = APP_FOLDER,
-                            UseShellExecute = false,
-                            FileName = "dotnet",
-                            Arguments = $"TrueSkills.dll {Language.Name}",
-                            CreateNoWindow = true
-                        };
-                        Process.Start(startInfo);
-                    }
-                    catch
-                    {
-                        return;
-                    }
+                        WorkingDirectory = APP_FOLDER,
+                        UseShellExecute = false,
+                        FileName = "dotnet",
+                        Arguments = $"TrueSkills.dll {Language.Name}",
+                        CreateNoWindow = true
+                    };
+                    var process = new Process();
+                    Process.Start(startInfo);
                     break;
                 case Status.DownloadingApp:
                     InstallAppFiles();
@@ -440,10 +434,18 @@ namespace TrueSkills
 
         private void ClearDirectory()
         {
-            if (Directory.Exists(APP_DIRECTORY))
+            try
             {
-                Directory.Delete(APP_DIRECTORY, true);
+                if (Directory.Exists(APP_DIRECTORY))
+                {
+                    Directory.Delete(APP_DIRECTORY, true);
+                }
             }
+            catch
+            {
+                return;
+            }
+
         }
 
         private string PathToZip()
