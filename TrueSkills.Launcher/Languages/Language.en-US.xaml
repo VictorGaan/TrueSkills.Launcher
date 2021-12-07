@@ -42,6 +42,8 @@
     <v:String x:Key="lm_Ready">Start</v:String>
     <v:String x:Key="lm_Support">Help</v:String>
     <v:String x:Key="lm_Version">Version</v:String>
+    <v:String x:Key="lm_VersionNoExists">Does not exist</v:String>
+
     <!--Launcher-->
     <!--MainWindow-->
 

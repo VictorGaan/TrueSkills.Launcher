@@ -136,17 +136,7 @@ namespace TrueSkills
                     }
                     break;
                 case Status.DownloadingApp:
-                    Text version = null;
-                    bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
-                    {
-                        version = CheckVersion(DOWNLOAD_APP);
-                    });
-                    if (version == null)
-                    {
-                        InstallAppFiles();
-                    }
-                    break;
-                default:
+                    InstallAppFiles();
                     break;
             }
         }
@@ -229,21 +219,39 @@ namespace TrueSkills
         {
             ProgressBarVisible = Visibility.Visible;
             Directory.CreateDirectory(APP_DIRECTORY);
-            using (WebClient webClient = new WebClient())
+            try
             {
-                webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-                webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
-                webClient.DownloadFileAsync(new Uri(DOWNLOAD_APP), APP_DIRECTORY + "\\Build.zip");
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+                    webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
+                    webClient.DownloadFileAsync(new Uri(DOWNLOAD_APP), APP_DIRECTORY + "\\Build.zip");
+                }
+            }
+            catch (Exception)
+            {
+                ProgressBarVisible = Visibility.Collapsed;
+                CheckUpdates();
+                return;
             }
         }
 
         private void CheckUpdates()
         {
+            CheckBuild();
             Text version = null;
-            bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
+            try
             {
-                version = CheckVersion(DOWNLOAD_APP);
-            });
+                bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(2000), () =>
+                {
+                    version = CheckVersion(DOWNLOAD_APP);
+                });
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
 
             if (version != null)
             {
@@ -275,6 +283,22 @@ namespace TrueSkills
             {
                 Status = Status.DownloadingApp;
                 ClearDirectory();
+            }
+
+        }
+
+        private void CheckBuild()
+        {
+            if (!Directory.Exists(APP_DIRECTORY))
+            {
+                Version = _currentResource["lm_VersionNoExists"].ToString();
+            }
+            if (Directory.Exists(APP_DIRECTORY))
+            {
+                if (!Directory.Exists(APP_DIRECTORY + "\\Build"))
+                {
+                    Version = _currentResource["lm_VersionNoExists"].ToString();
+                }
             }
 
         }
